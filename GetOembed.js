@@ -22,13 +22,20 @@ http.get(options, function (res) {
         var ProviderSection = html.substr(start.index, end.index - start.index);
         ProviderSection = ProviderSection.replace(/[\t\v\r\n]/g, '')
         providerStrArray=findProviders(ProviderSection);
+        var provider = parseProvider(providerStrArray[0]);
         console.log(providerStrArray);
     })
 })
 
 function parseProvider(providerstr){
-    var provider = {name, sitelink, domains, schemas, endpoint, sample, working:false, supporting:false };
-
+    var provider = {name:'', sitelink:'', domains:'', schemas:'', endpoint:'', example:'', https:false, working:false, supporting:false };
+    
+    var namereg = '<p>([\\w .]+)\\(<a href="[\\w .:/>]+">([\\w .:/>]+)</a>\\)</p>';
+    var nameregxx = new RegExp(namereg);
+    var result = providerstr.match(nameregxx);
+    provider.name = result[1].trim();
+    provider.sitelink = result[2].trim();
+    return provider;
 }
 function findProviders(data) {
     var regstr = '<p>[\\w. 0-9]*\\(<a href=\\"http';
