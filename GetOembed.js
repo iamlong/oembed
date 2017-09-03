@@ -38,7 +38,7 @@ function checkProvider(provider) {
     for (var item in provider.examples) {
         var url = provider.examples[item];
         var option = getOption(url);
-        console.log(option.host+'\n');
+        console.log(option.host + '\n');
         /*
         httplocal.get(option, function (res) {
             res.on('data', function (data) {
@@ -74,12 +74,14 @@ function checkProvider(provider) {
 }
 
 function getOption(url) {
-    var optionreg = '[https*://]?([\\w\\d.-]+):*(\\d*)/([\\S ]+)';
+
+    if (url.match("http") == null)
+        url = "http://" + url;
+
+    var optionreg = 'https*://([\\w\\d.-]+):*(\\d*)/([\\S ]+)';
     var optionregxx = new RegExp(optionreg);
     var result = url.match(optionregxx);
 
-    if(url.match("http")==null)
-        url += "http://";
 
     var option = {
         host: '',
@@ -92,7 +94,7 @@ function getOption(url) {
     else
         option.port = result[2];
     option.path = result[3];
-    if(option.host == "169.53.132.52")
+    if (option.host == "169.53.132.52")
         return;
     return option;
 }
