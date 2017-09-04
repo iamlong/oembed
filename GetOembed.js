@@ -6,30 +6,55 @@ var options = {
     path: '/'
 };
 
-var html = '';
-
 var providerStrArray = [];
 var providerArray = [];
 
-http.get(options, function (res) {
-    res.on('data', function (data) {
-        html = html + data;
-    }).on('end', function () {
-        var start = html.match('<p>To add new providers');
-        var end = html.match('<a name=\"section7.2');
-        if (end == null)
-            end.index = html.length;
-        var ProviderSection = html.substr(start.index, end.index - start.index);
-        ProviderSection = ProviderSection.replace(/[\t\v\r\n]/g, '');
-        providerStrArray = findProviders(ProviderSection);
-        for (var item in providerStrArray) {
-            var provider = parseProvider(providerStrArray[item]);
-            var newprovider = checkProvider(provider);
-            providerArray.push(provider);
-            console.log(item + ':' + provider.name + '\t' + provider.endpoint + '\n');
+getoEmbedProviders();
+
+console.log('end');
+
+async function getoEmbedProviders() {
+
+
+    http.get(options, function (res) {
+
+        const contentType = res.headers['content-type'];
+
+        let error;
+
+        if (res.statusCode != 200) {
+            error = new Error('Request to get oEmbed.com Homepage failed\n' + `Status Code: ${statuscode}`);
         }
-    })
-});
+
+        if (error) {
+            console.error(error.message);
+            res.resume();
+        }
+
+        var rawdata = '';
+
+        res.on('data', (chunk) => {
+            rawdata = rawdata + chunk;
+        });
+
+        res.on('end', () => {
+
+            var start = rawdata.match('<p>To add new providers');
+            var end = rawdata.match('<a name=\"section7.2');
+            if (end == null)
+                end.index = rawdata.length;
+            var ProviderSection = rawdata.substr(start.index, end.index - start.index);
+            ProviderSection = ProviderSection.replace(/[\t\v\r\n]/g, '');
+            providerStrArray = findProviders(ProviderSection);
+            for (var item in providerStrArray) {
+                var provider = parseProvider(providerStrArray[item]);
+                providerArray.push(provider);
+                console.debug(item + ':' + provider.name + '\t' + provider.endpoint + '\n');
+            }
+        });
+
+    });
+}
 
 function checkProvider(provider) {
 
