@@ -13,8 +13,7 @@ getoEmbedProviders();
 
 console.log('end');
 
-async function getoEmbedProviders() {
-
+function getoEmbedProviders() {
 
     http.get(options, function (res) {
 
