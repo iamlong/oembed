@@ -17,7 +17,7 @@ function getoEmbedProviders() {
 
     http.get(options, function (res) {
 
-        const contentType = res.headers['content-type'];
+        //var contentType = res.headers['content-type'];
 
         let error;
 
@@ -97,10 +97,10 @@ function checkProvider(provider) {
 
 }
 
-function getOption(url) {
+/* function getOption(url) {
 
-    if (url.match("http") == null)
-        url = "http://" + url;
+    if (url.match('http') == null)
+        url = 'http://' + url;
 
     var optionreg = 'https*://([\\w\\d.-]+):*(\\d*)/([\\S ]+)';
     var optionregxx = new RegExp(optionreg);
@@ -113,16 +113,16 @@ function getOption(url) {
         path: ''
     };
     option.host = result[1];
-    if (result[2] == "")
-        option.port = "80";
+    if (result[2] == '')
+        option.port = '80';
     else
         option.port = result[2];
     option.path = result[3];
-    if (option.host == "169.53.132.52")
+    if (option.host == '169.53.132.52')
         return;
     return option;
 }
-
+ */
 function parseProvider(providerstr) {
     var provider = {
         name: '',
@@ -186,13 +186,13 @@ function findProviders(data) {
     var startregx = new RegExp(regstr);
     var scanstr = data;
     var first = true;
-    var prev = 0;
     var providers = [];
+    var prestr = '';
 
     do {
         var nextstop = scanstr.match(startregx);
-        if (nextstop == null) {
-            scanstr.match()
+        if (nextstop == null&&prestr != '') {
+            scanstr.match();
             providers.push(prestr);
             break;
         }
