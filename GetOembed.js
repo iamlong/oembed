@@ -1,4 +1,5 @@
 var http = require('http');
+var async = require('async');
 
 var options = {
     host: 'oembed.com',
@@ -8,12 +9,40 @@ var options = {
 
 var providerStrArray = [];
 var providerArray = [];
+var providerchecking = [];
 
-getoEmbedProviders();
+var check = function (provider) {
+    return function (done) {
+        checkProvider(provider, done);
+    };
+};
 
-console.log('end');
+async.series({
+    one: function (done) {
+        getoEmbedProviders(done);
+    },
+    two: function (done) {
+        for (var item in providerArray) {
+            var provider = providerArray[item];
+            providerchecking.push(check(provider));
+        }
+        done(null, null);
+    },
+    three: function(done){
+        var newAsync = require('async');
+        newAsync.parallelLimit(providerchecking
+        , 2, function(error, result){
+            done(null, null);
+        });
+    }
+}, function (error, result) {
+    console.log('end');
+});
 
-function getoEmbedProviders() {
+
+
+
+function getoEmbedProviders(done) {
 
     http.get(options, function (res) {
 
@@ -48,21 +77,21 @@ function getoEmbedProviders() {
             for (var item in providerStrArray) {
                 var provider = parseProvider(providerStrArray[item]);
                 providerArray.push(provider);
-                console.debug(item + ':' + provider.name + '\t' + provider.endpoint + '\n');
             }
+            done(null, null);
         });
 
     });
 }
 
-function checkProvider(provider) {
+function checkProvider(provider, done) {
 
     var httplocal = require('http');
     var embedcode = "";
     for (var item in provider.examples) {
         var url = provider.examples[item];
-        var option = getOption(url);
-        console.log(option.host + '\n');
+        //var option = getOption(url);
+        console.log(url + '\n');
         /*
         httplocal.get(option, function (res) {
             res.on('data', function (data) {
@@ -92,6 +121,8 @@ function checkProvider(provider) {
         });*/
 
     }
+
+    done(null, null);
 
     return provider;
 
@@ -191,7 +222,7 @@ function findProviders(data) {
 
     do {
         var nextstop = scanstr.match(startregx);
-        if (nextstop == null&&prestr != '') {
+        if (nextstop == null && prestr != '') {
             scanstr.match();
             providers.push(prestr);
             break;
