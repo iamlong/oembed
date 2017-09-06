@@ -28,12 +28,12 @@ async.series({
         }
         done(null, null);
     },
-    three: function(done){
+    three: function (done) {
         var newAsync = require('async');
         newAsync.parallelLimit(providerchecking
-        , 2, function(error, result){
-            done(null, null);
-        });
+            , 2, function (error, result) {
+                done(null, null);
+            });
     }
 }, function (error, result) {
     console.log('end');
@@ -87,7 +87,7 @@ function getoEmbedProviders(done) {
 function checkProvider(provider, done) {
 
     var httplocal = require('http');
-    var embedcode = "";
+    var embedcode = '';
     for (var item in provider.examples) {
         var url = provider.examples[item];
         //var option = getOption(url);
@@ -179,7 +179,7 @@ function parseProvider(providerstr) {
     var schemaregxx = new RegExp(schemareg);
     var loopstr = providerstr;
 
-    do {
+    while (true) {
         var result = loopstr.match(schemaregxx);
         if (result == null)
             break;
@@ -187,7 +187,7 @@ function parseProvider(providerstr) {
         var temp = provider.schemas.split('/');
         provider.domains += temp[2].trim() + ';';
         loopstr = loopstr.substr(result.index + result[0].length, loopstr.length - result[0].length);
-    } while (true);
+    };
 
     //find endpoint
     var endpointreg = 'API endpoint: <code>([\\S]+)</code>';
@@ -200,13 +200,13 @@ function parseProvider(providerstr) {
     var exampleregxx = new RegExp(examplereg);
     var loopstr = providerstr;
 
-    do {
+    while (true) {
         var result = loopstr.match(exampleregxx);
         if (result == null)
             break;
         provider.examples.push(result[1].trim());
         loopstr = loopstr.substr(result.index + result[0].length, loopstr.length - result[0].length);
-    } while (true);
+    };
 
     return provider;
 }
@@ -220,7 +220,7 @@ function findProviders(data) {
     var providers = [];
     var prestr = '';
 
-    do {
+    while (true) {
         var nextstop = scanstr.match(startregx);
         if (nextstop == null && prestr != '') {
             scanstr.match();
@@ -236,7 +236,7 @@ function findProviders(data) {
             prestr = scanstr.substr(nextstop.index, scanstr.length);
             scanstr = scanstr.substr(nextstop.index + regstr.length - 3, scanstr.length);
         }
-    } while (true);
+    };
 
     return providers;
 }
