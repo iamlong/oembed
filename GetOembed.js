@@ -11,11 +11,6 @@ var providerStrArray = [];
 var providerArray = [];
 var providerchecking = [];
 
-var check = function (provider) {
-    return function (done) {
-        checkProvider(provider, done);
-    };
-};
 
 async.series({
     one: function (done) {
@@ -24,7 +19,7 @@ async.series({
     two: function (done) {
         for (var item in providerArray) {
             var provider = providerArray[item];
-            providerchecking.push(check(provider));
+            providerchecking.push(checkoEmbdProvider(provider));
         }
         done(null, null);
     },
@@ -84,14 +79,24 @@ function getoEmbedProviders(done) {
     });
 }
 
+var checkoEmbdProvider = function (provider) {
+    return function (done) {
+        return checkProvider(provider, done);
+    };
+};
+
 function checkProvider(provider, done) {
 
-    var httplocal = require('http');
-    var embedcode = '';
+    var checkexamples = [];
     for (var item in provider.examples) {
-        var url = provider.examples[item];
-        //var option = getOption(url);
-        console.log(url + '\n');
+        var example;
+        example.url = provider.examples[item];
+        example.stat = 'needcheck';
+        checkexamples.push(getexample(example.url, example));
+    }
+
+    var checkasync = new('async');
+
         /*
         httplocal.get(option, function (res) {
             res.on('data', function (data) {
@@ -120,14 +125,32 @@ function checkProvider(provider, done) {
             });
         });*/
 
-    }
-
     done(null, null);
-
-    return provider;
-
 }
 
+function getexample (option, ret){
+    return function (syncdone){
+        return getHttp(option, ret, syncdone);
+    }
+}
+
+function getHttp(option, ret, syncdone){
+    var httpClientRequester = require('http');
+    var htmlcode = '';
+    httpClientRequester.get(url, function (res){
+        res.on('data', function(data){
+            htmlcode = htmlcode + data;
+        }).on('end', function(){
+            ret.htmlcode = htmlcode;
+            ret.stat = 'success';
+            syncdone(null, null);
+        }).on('error', function(data){
+            ret.htmlcode = htmlcode;
+            ret.stat = 'fail';
+            syncdone(null, null);
+        });
+    });
+}
 /* function getOption(url) {
 
     if (url.match('http') == null)
