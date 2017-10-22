@@ -199,11 +199,12 @@ function getHttp(option, ret, getHttpDone) {
     const d = require('domain').create();
     d.on('error', (er) => {
         console.error('Caught error!', er);
+        getHttpDone(null, null);
     });
 
     console.log('get example from:' + option);
 
-    d.enter();
+    //d.enter();
 
     if (option.match('^https://') != null)
         d.run( ()=> {httpsClientRequester.get(option, function (res) {
